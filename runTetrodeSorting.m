@@ -52,3 +52,5 @@ for i=1:length(bmiBlocks)
     !activate circus & spyking-circus SU_CONT_Cb_tet_7_0.dat -m filtering,whitening,clustering,fitting,merging,converting -c 6
     
 end
+runTime = toc;
+disp(['done! time elapsed (hours) - ', num2str(runTime/3600)]);
