@@ -4,7 +4,7 @@
 clc;clear;close all;tic;
 disp('running...');
 
-% Initialization change rootpath and bmiBlocks according to your experiment indentifiers. 
+% Initialization (change rootpath and bmiBlocks according to your experiment identifiers) 
 rootpath = 'Z:\TDTData\BMI_zBus-200310-092524\';
 bmiBlocks = {'I061-200505_DAT_files','I061-200507_DAT_files','I061-200508_DAT_files','I061-200509_DAT_files'};
 
