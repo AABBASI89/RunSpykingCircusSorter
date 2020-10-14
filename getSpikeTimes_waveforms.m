@@ -2,21 +2,24 @@
 clear;clc;close all; tic;
 path = 'Z:\TDTData\Acute_Neuromod_New-200929-144807\';
 savepath = 'C:\Users\AbbasiM\Documents\MATLAB\AcuteCb_AA\Data\';
-blocks = {'I068-200929_DAT_files','I069-200930_DAT_files'}; 
+blocks = {'I070-201006_DAT_files','I071-201008_DAT_files','I072-201009_DAT_files'}; 
 folder = '\SU_CONT\SU_CONT.GUI\';
 totChans = 32;
 spkwflen_before = 15; % in samples
 spkwflen_after  = 16;
 fs = 2.441406250000000e+04;
-for i=2%1:length(blocks)
+for i=1%1:length(blocks)
   for ch = 1:totChans
-    files = dir([path,blocks{i},'\Channel_',num2str(ch),folder,'spike*.npy']);
-    spike_times    = double(readNPY([path,blocks{i},'\Channel_',num2str(ch),folder,files(3).name]));
-    spike_clusters = readNPY([path,blocks{i},'\Channel_',num2str(ch),folder,files(1).name]);
+    spike_times    = double(readNPY([path,blocks{i},'\Channel_',num2str(ch),folder,'spike_times.npy']));
+    spike_clusters = readNPY([path,blocks{i},'\Channel_',num2str(ch),folder,'spike_clusters.npy']);
+    f = tdfread([path,blocks{i},'\Channel_',num2str(ch),folder,'cluster_group.tsv']); 
+    cluster_labels = deblank(string(f.group));
+    cluster_id     = f.cluster_id;
+    valid_clusters = cluster_id(strcmp(cluster_labels,"mua")|strcmp(cluster_labels,"good"));
     curChanPath = [path,blocks{i},'\Channel_',num2str(ch),'\SU_CONT.dat'];
     fiD = fopen(curChanPath,'r');
     curChan_cont = fread(fiD,'float32');
-    for unit=min(spike_clusters):max(spike_clusters)
+    for unit=valid_clusters
       st = (spike_times(spike_clusters==unit))';
       if ~isempty(st)
         for w=1:10
