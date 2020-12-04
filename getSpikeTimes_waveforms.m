@@ -8,7 +8,7 @@ totChans = 32;
 spkwflen_before = 15; % in samples
 spkwflen_after  = 16;
 fs = 2.441406250000000e+04;
-for i=1%1:length(blocks)
+for i=3%1:length(blocks)
   for ch = 1:totChans
     spike_times    = double(readNPY([path,blocks{i},'\Channel_',num2str(ch),folder,'spike_times.npy']));
     spike_clusters = readNPY([path,blocks{i},'\Channel_',num2str(ch),folder,'spike_clusters.npy']);
@@ -19,7 +19,7 @@ for i=1%1:length(blocks)
     curChanPath = [path,blocks{i},'\Channel_',num2str(ch),'\SU_CONT.dat'];
     fiD = fopen(curChanPath,'r');
     curChan_cont = fread(fiD,'float32');
-    for unit=valid_clusters
+    for unit=min(valid_clusters):max(valid_clusters)
       st = (spike_times(spike_clusters==unit))';
       if ~isempty(st)
         for w=1:10
