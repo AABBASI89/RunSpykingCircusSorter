@@ -1,15 +1,15 @@
 %% Get TimeStamps and Waveforms from units sorted using Spyking Circus
 %  Author: Aamir Abbasi
 %  ---------------------------------------------------------------------
-%% Read spike times and waveforms from Cb for I061 and I064
+%% Read spike times and waveforms from Cb for I076
 clear;clc;close all; tic;
-path = 'Z:\Aamir\BMI\I061\';
-savepath = 'Z:\Aamir\BMI\I061\Data\';
-sessions = {'I061-200505_DAT_files','I061-200506_DAT_files',...
-  'I061-200507_DAT_files','I061-200508_DAT_files','I061-200509_DAT_files'};
-totTetrodes = 8;
-nChans = 4; % 4 channels per tetrode
-d = 'Tetrode'; %'Tetrode' For Neuronexus probes %'Polytrode' For Cambridge probes
+path = 'Z:\Aamir\BMI\I076\';
+savepath = 'Z:\Aamir\BMI\I076\Data\';
+sessions = {'I076-201201_DAT_files','I076-201202_DAT_files',...
+  'I076-201203_DAT_files','I076-201204_DAT_files','I076-201205_DAT_files'};
+totPolytrodes = 4;
+nChans = 16; % 16 channels per polytrode
+d = 'Polytrode'; %'Tetrode' For Neuronexus probes %'Polytrode' For Cambridge probes
 spkwflen_before = 15; % in samples
 spkwflen_after  = 16;
 Fs = 24414;
@@ -17,7 +17,7 @@ for i=1:length(sessions)
   blocks = dir([savepath,sessions{i}(1:11),'*']);
   % Loop over blocks to read their lengths
   for b = 1:length(blocks)
-    curChanPath = [path,sessions{i},'\Cb\',d,'_',num2str(0),'\SU_CONT_Cb_tet_',num2str(0),'_',num2str(b-1),'.dat'];
+    curChanPath = [path,sessions{i},'\Cb\',d,'_',num2str(0),'\SU_CONT_Cb_poly_',num2str(0),'_',num2str(b-1),'.dat'];
     fiD = fopen(curChanPath,'r');
     chan_cont = fread(fiD,'float32');
     chan_cont = reshape(chan_cont,nChans,length(chan_cont)/nChans);
@@ -27,20 +27,20 @@ for i=1:length(sessions)
   for b = 1:length(blocks)
     disp(['Block-',blocks(b).name]);
     currentsavepath = [savepath,blocks(b).name];
-    for tet = 1:totTetrodes
-      folder = ['\SU_CONT_Cb_tet_',num2str(tet-1),'_0\SU_CONT_Cb_tet_',num2str(tet-1),'_0.GUI\'];
-      spike_times    = double(readNPY([path,sessions{i},'\Cb\',d,'_',num2str(tet-1),folder,'spike_times.npy']));
-      spike_clusters = readNPY([path,sessions{i},'\Cb\',d,'_',num2str(tet-1),folder,'spike_clusters.npy']);
-      cluster_info = tdfread([path,sessions{i},'\Cb\',d,'_',num2str(tet-1),folder,'cluster_info.tsv']);
+    for p = 1:totPolytrodes
+      folder = ['\SU_CONT_Cb_poly_',num2str(p-1),'_0\SU_CONT_Cb_poly_',num2str(p-1),'_0.GUI\'];
+      spike_times    = double(readNPY([path,sessions{i},'\Cb\',d,'_',num2str(p-1),folder,'spike_times.npy']));
+      spike_clusters = readNPY([path,sessions{i},'\Cb\',d,'_',num2str(p-1),folder,'spike_clusters.npy']);
+      cluster_info = tdfread([path,sessions{i},'\Cb\',d,'_',num2str(p-1),folder,'cluster_info.tsv']);
       ch = cluster_info.ch;
       g = cluster_info.group;
       g = cellstr(g)';
-      curChanPath = [path,sessions{i},'\Cb\',d,'_',num2str(tet-1),'\SU_CONT_Cb_tet_',num2str(tet-1),'_',num2str(b-1),'.dat'];
+      curChanPath = [path,sessions{i},'\Cb\',d,'_',num2str(p-1),'\SU_CONT_Cb_poly_',num2str(p-1),'_',num2str(b-1),'.dat'];
       fiD = fopen(curChanPath,'r');
       chan_cont = fread(fiD,'float32');
       chan_cont = reshape(chan_cont,nChans,length(chan_cont)/nChans); 
       for unit=1:size(g,2)
-        disp(['Tetrode-',num2str(tet),' Unit-',num2str(unit)]);
+        disp(['Polytrode-',num2str(p),' Unit-',num2str(unit)]);
         curChan_cont = chan_cont(ch(unit)+1,:);
         st = (spike_times(spike_clusters==unit-1))';
         if b==1
@@ -54,9 +54,9 @@ for i=1:length(sessions)
             valid_inds = logical(((1:length(curChan_cont))>samples(1)).*((1:length(curChan_cont))<samples(end)));
             wf(:,w) = curChan_cont(valid_inds);
           end
-          TimeStamps2{tet,unit+1} = st./Fs;
-          Waves2{tet,unit+1} = wf;
-          Labels2{tet,unit+1} = g{unit};
+          TimeStamps2{p,unit+1} = st./Fs;
+          Waves2{p,unit+1} = wf;
+          Labels2{p,unit+1} = g{unit};
         end
         clear wf
       end
