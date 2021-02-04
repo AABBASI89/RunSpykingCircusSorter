@@ -13,7 +13,7 @@ d = 'Tetrode'; %'Tetrode' For Neuronexus probes %'Polytrode' For Cambridge probe
 spkwflen_before = 6; % in samples
 spkwflen_after  = 16;
 Fs = 24414;
-for i=2:length(sessions)
+for i=1:length(sessions)
   blocks = dir([savepath,sessions{i}(1:11),'*']);
   % Loop over blocks to read their lengths
   for b = 1:length(blocks)
