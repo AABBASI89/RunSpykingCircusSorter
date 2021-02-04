@@ -10,7 +10,7 @@ sessions = {'I076-201201_DAT_files','I076-201202_DAT_files',...
 totPolytrodes = 4;
 nChans = 16; % 16 channels per polytrode
 d = 'Polytrode'; %'Tetrode' For Neuronexus probes %'Polytrode' For Cambridge probes
-spkwflen_before = 15; % in samples
+spkwflen_before = 6; % in samples
 spkwflen_after  = 16;
 Fs = 24414;
 for i=1:length(sessions)
@@ -49,22 +49,22 @@ for i=1:length(sessions)
           st = st(st>curBlockLen(b-1) & st<curBlockLen(b))-curBlockLen(b-1);
         end
         if ~isempty(st)
-          for w=1:10
-            samples = ((st(w))-spkwflen_before):((st(w))+spkwflen_after);
-            valid_inds = logical(((1:length(curChan_cont))>samples(1)).*((1:length(curChan_cont))<samples(end)));
-            wf(:,w) = curChan_cont(valid_inds);
-          end
+%           for w=1:10
+%             samples = ((st(w))-spkwflen_before):((st(w))+spkwflen_after);
+%             valid_inds = logical(((1:length(curChan_cont))>samples(1)).*((1:length(curChan_cont))<samples(end)));
+%             wf(:,w) = curChan_cont(valid_inds);
+%           end
           TimeStamps2{p,unit+1} = st./Fs;
-          Waves2{p,unit+1} = wf;
+%           Waves2{p,unit+1} = wf;
           Labels2{p,unit+1} = g{unit};
         end
-        clear wf
+%         clear wf
       end
     end
     if ~exist(currentsavepath, 'dir')
       mkdir(currentsavepath);
     end
-    save([currentsavepath,'\Timestamps.mat'], 'TimeStamps2','Waves2','Labels2');
+    save([currentsavepath,'\Timestamps_Cb.mat'], 'TimeStamps2','Labels2'); %'Waves2'
   end
 end
 runTime = toc;
