@@ -21,7 +21,11 @@ for i=1:length(sessions)
     fiD = fopen(curChanPath,'r');
     chan_cont = fread(fiD,'float32');
     chan_cont = reshape(chan_cont,nChans,length(chan_cont)/nChans);
-    curBlockLen(b) = length(chan_cont);
+    if b==1
+      curBlockLen(b) = length(chan_cont);
+    else
+      curBlockLen(b) = curBlockLen(b-1)+length(chan_cont);        
+    end
   end
   % Loops to extract timestamps and waveforms
   for b = 1:length(blocks)

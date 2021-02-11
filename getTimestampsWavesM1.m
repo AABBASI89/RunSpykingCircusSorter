@@ -12,14 +12,18 @@ d = 'Channel'; %'Channel' for TDT Microwire arrays
 spkwflen_before = 6; % in samples
 spkwflen_after  = 16;
 Fs = 24414;
-for i=1:length(sessions)
+for i=5:length(sessions)
   blocks = dir([savepath,sessions{i}(1:11),'*']);
   % Loop over blocks to read their lengths
   for b = 1:length(blocks)
     curChanPath = [path,sessions{i},'\M1\',d,'_',num2str(0),'\SU_CONT_M1_Ch_',num2str(0),'_',num2str(b-1),'.dat'];
     fiD = fopen(curChanPath,'r');
     chan_cont = fread(fiD,'float32');
-    curBlockLen(b) = length(chan_cont);
+    if b==1
+      curBlockLen(b) = length(chan_cont);
+    else
+      curBlockLen(b) = curBlockLen(b-1)+length(chan_cont);        
+    end
   end
   % Loops to extract timestamps and waveforms
   for b = 1:length(blocks)
