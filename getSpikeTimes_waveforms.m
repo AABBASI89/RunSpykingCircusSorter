@@ -17,8 +17,9 @@ for i=3%1:length(blocks)
     cluster_id     = f.cluster_id;
     valid_clusters = cluster_id(strcmp(cluster_labels,"mua")|strcmp(cluster_labels,"good"));
     curChanPath = [path,blocks{i},'\Channel_',num2str(ch),'\SU_CONT.dat'];
-    fiD = fopen(curChanPath,'r');
+    fiD = fopen(curChanPath,'r');   
     curChan_cont = fread(fiD,'float32');
+    fclose(fiD); % to prevent too many files open error!     
     for unit=min(valid_clusters):max(valid_clusters)
       st = (spike_times(spike_clusters==unit))';
       if ~isempty(st)

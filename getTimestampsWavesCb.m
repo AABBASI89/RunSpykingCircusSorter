@@ -3,23 +3,25 @@
 %  ---------------------------------------------------------------------
 %% Read spike times and waveforms from Cb for I061 and I064
 clear;clc;close all; tic;
-path = 'Z:\Aamir\BMI\I061\';
-savepath = 'Z:\Aamir\BMI\I061\Data\';
-sessions = {'I061-200505_DAT_files','I061-200506_DAT_files',...
-  'I061-200507_DAT_files','I061-200508_DAT_files','I061-200509_DAT_files'};
+path = 'Z:\Aamir\BMI\I064\';
+savepath = 'Z:\Aamir\BMI\I064\Data\';
+sessions = {'I064-200629_DAT_files','I064-200630_DAT_files',...
+  'I064-200701_DAT_files','I064-200702_DAT_files','I064-200706_DAT_files',...
+  'I064-200707_DAT_files','I064-200708_DAT_files'};
 totTetrodes = 8;
 nChans = 4; % 4 channels per tetrode
 d = 'Tetrode'; %'Tetrode' For Neuronexus probes %'Polytrode' For Cambridge probes
 spkwflen_before = 6; % in samples
 spkwflen_after  = 16;
 Fs = 24414;
-for i=1:length(sessions)
+for i=4%1:length(sessions)
   blocks = dir([savepath,sessions{i}(1:11),'*']);
   % Loop over blocks to read their lengths
   for b = 1:length(blocks)
     curChanPath = [path,sessions{i},'\Cb\',d,'_',num2str(0),'\SU_CONT_Cb_tet_',num2str(0),'_',num2str(b-1),'.dat'];
     fiD = fopen(curChanPath,'r');
     chan_cont = fread(fiD,'float32');
+    fclose(fiD); % to prevent too many files open error!
     chan_cont = reshape(chan_cont,nChans,length(chan_cont)/nChans);
     if b==1
       curBlockLen(b) = length(chan_cont);
@@ -42,6 +44,7 @@ for i=1:length(sessions)
       curChanPath = [path,sessions{i},'\Cb\',d,'_',num2str(tet-1),'\SU_CONT_Cb_tet_',num2str(tet-1),'_',num2str(b-1),'.dat'];
       fiD = fopen(curChanPath,'r');
       chan_cont = fread(fiD,'float32');
+      fclose(fiD);
       chan_cont = reshape(chan_cont,nChans,length(chan_cont)/nChans); 
       for unit=1:size(g,2)
         disp(['Tetrode-',num2str(tet),' Unit-',num2str(unit)]);

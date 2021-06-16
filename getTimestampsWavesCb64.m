@@ -1,25 +1,30 @@
 %% Get TimeStamps and Waveforms from units sorted using Spyking Circus
 %  Author: Aamir Abbasi
 %  ---------------------------------------------------------------------
-%% Read spike times and waveforms from Cb for I076
+%% Read spike times and waveforms from Cb recordings with 64Ch polytrode
 clear;clc;close all; tic;
-path = 'Z:\Aamir\BMI\I076\';
-savepath = 'Z:\Aamir\BMI\I076\Data\';
-sessions = {'I076-201201_DAT_files','I076-201202_DAT_files',...
-  'I076-201203_DAT_files','I076-201204_DAT_files','I076-201205_DAT_files'};
+path = 'Z:\Aamir\BMI\I086\';
+savepath = 'Z:\Aamir\BMI\I086\Data\';
+% sessions = {'I076-201201_DAT_files','I076-201202_DAT_files',...
+%   'I076-201203_DAT_files','I076-201204_DAT_files','I076-201205_DAT_files'};
+sessions = {'I086-210506_DAT_files','I086-210507_DAT_files',...
+    'I086-210511_DAT_files','I086-210514_DAT_files',...
+    'I086-210512_DAT_files','I086-210513_DAT_files'};
 totPolytrodes = 4;
 nChans = 16; % 16 channels per polytrode
 d = 'Polytrode'; %'Tetrode' For Neuronexus probes %'Polytrode' For Cambridge probes
 spkwflen_before = 6; % in samples
 spkwflen_after  = 16;
 Fs = 24414;
-for i=1:length(sessions)
+for i=5%length(sessions)
   blocks = dir([savepath,sessions{i}(1:11),'*']);
   % Loop over blocks to read their lengths
   for b = 1:length(blocks)
     curChanPath = [path,sessions{i},'\Cb\',d,'_',num2str(0),'\SU_CONT_Cb_poly_',num2str(0),'_',num2str(b-1),'.dat'];
     fiD = fopen(curChanPath,'r');
+    disp(['Reading DAT file.... ',num2str(b)]);
     chan_cont = fread(fiD,'float32');
+    fclose(fiD); % to prevent too many files are open error!    
     chan_cont = reshape(chan_cont,nChans,length(chan_cont)/nChans);
     if b==1
       curBlockLen(b) = length(chan_cont);
@@ -42,6 +47,7 @@ for i=1:length(sessions)
       curChanPath = [path,sessions{i},'\Cb\',d,'_',num2str(p-1),'\SU_CONT_Cb_poly_',num2str(p-1),'_',num2str(b-1),'.dat'];
       fiD = fopen(curChanPath,'r');
       chan_cont = fread(fiD,'float32');
+      fclose(fiD);
       chan_cont = reshape(chan_cont,nChans,length(chan_cont)/nChans); 
       for unit=1:size(g,2)
         disp(['Polytrode-',num2str(p),' Unit-',num2str(unit)]);
